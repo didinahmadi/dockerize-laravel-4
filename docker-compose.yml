@@ -1,0 +1,32 @@
+version: "3.1"
+
+services:
+  app:
+    image: runnable/php:5.6.27-apache
+    depends_on:
+      - mariadb
+    links:
+      - mariadb
+    ports:
+      - 80:80
+    restart: always
+    env_file:
+      - .env  
+    volumes:
+      - ./src:/var/www/html:rw
+      - ./docker/000-laravel.conf:/etc/apache2/sites-enabled/000-laravel.conf
+      - ./docker/apache2.conf:/etc/apache2/apache2.conf
+  mariadb:
+    image: mariadb:10.2
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - myDataVolume:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+volumes:
+  myDataVolume:
+    external: false
+    name: myDataVolume_test
